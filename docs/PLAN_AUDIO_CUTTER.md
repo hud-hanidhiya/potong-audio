@@ -1,7 +1,7 @@
 # PLAN_AUDIO_CUTTER.md
-## Audio Cutter — Desktop App Offline (Cross-Platform)
+## Potong-Audio — Desktop App Offline (Cross-Platform)
 
-**Status:** Draft v3 (arsitektur hybrid: React UI + Rust native processing)
+**Status:** Draft v3 (arsitektur hybrid: React UI + Rust native processing) — Fase 0 (PoC) SELESAI, lihat `POC_FINDINGS.md`
 **Tanggal:** 2026-08-16
 **Prasyarat:** Fase 0 (PoC validasi teknis) WAJIB selesai sebelum Fase 1 dimulai.
 

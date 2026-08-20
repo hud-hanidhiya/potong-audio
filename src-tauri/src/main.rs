@@ -13,7 +13,7 @@
 
 #[cfg(feature = "tauri-runtime")]
 fn main() {
-    audio_cutter_lib::run();
+    potong_audio_lib::run();
 }
 
 #[cfg(not(feature = "tauri-runtime"))]

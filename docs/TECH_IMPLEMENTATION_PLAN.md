@@ -1,5 +1,5 @@
 # TECH_IMPLEMENTATION_PLAN.md
-## Audio Cutter — Technical Implementation Plan
+## Potong-Audio — Technical Implementation Plan
 
 **Companion dokumen dari:** `PLAN_AUDIO_CUTTER.md` (v3)
 **Tujuan dokumen ini:** breakdown teknis siap-eksekusi — struktur project, kontrak data/IPC, urutan implementasi per fase, dan definisi "selesai" untuk tiap task.
@@ -9,7 +9,8 @@
 ## 1. Struktur Project
 
 ```
-audio-cutter/
+potong-audio/
+├── package.json / vite.config.ts / tsconfig*.json   # config di root (bukan di src/)
 ├── src/                          # Frontend (React)
 │   ├── components/
 │   │   ├── upload/
@@ -35,11 +36,13 @@ audio-cutter/
 │
 ├── src-tauri/                    # Backend (Rust)
 │   ├── src/
-│   │   ├── main.rs
+│   │   ├── main.rs               # memanggil potong_audio_lib::run()
+│   │   ├── lib.rs
 │   │   ├── commands/
 │   │   │   ├── mod.rs
 │   │   │   ├── export.rs         # Command: export_audio
-│   │   │   └── probe.rs          # Command: probe_audio_file (metadata info)
+│   │   │   ├── probe.rs          # Command: probe_audio_file (metadata info)
+│   │   │   └── version.rs        # Command: get_ffmpeg_version (T0.1)
 │   │   ├── ffmpeg/
 │   │   │   ├── mod.rs
 │   │   │   ├── filter_builder.rs # Bangun filter graph string dari Effect Params
@@ -47,9 +50,10 @@ audio-cutter/
 │   │   │   └── sidecar.rs        # Wrapper spawn proses FFmpeg sidecar
 │   │   └── error.rs               # Error type terpusat
 │   ├── binaries/                  # FFmpeg sidecar binaries (per-target, lihat Section 4)
+│   ├── test-fixtures/             # fake_ffmpeg.{sh,bat} + sample audio utk test
 │   └── tauri.conf.json
 │
-├── POC_FINDINGS.md                # Output Fase 0
+├── POC_FINDINGS.md                # Output Fase 0 (selesai)
 └── PLAN_AUDIO_CUTTER.md
 ```
 

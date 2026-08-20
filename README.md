@@ -98,14 +98,14 @@ potongaudio/
 │   └── main.tsx
 ├── src-tauri/                   # Backend Rust
 │   ├── build.rs
-│   ├── Cargo.toml               # lib.name = audio_cutter_lib
+│   ├── Cargo.toml               # lib.name = potong_audio_lib
 │   ├── tauri.conf.json
 │   ├── capabilities/default.json
 │   ├── binaries/                # ffmpeg/ffprobe sidecar (target-triple naming)
 │   ├── icons/
 │   ├── test-fixtures/           # fake_ffmpeg.{sh,bat}, sample/
 │   └── src/
-│       ├── main.rs              # memanggil audio_cutter_lib::run()
+│       ├── main.rs              # memanggil potong_audio_lib::run()
 │       ├── lib.rs
 │       ├── error.rs
 │       ├── commands/            # export.rs, probe.rs, version.rs

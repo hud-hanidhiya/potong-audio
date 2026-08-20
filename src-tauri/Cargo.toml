@@ -2,7 +2,7 @@
 name = "potong-audio"
 version = "0.1.0"
 license = "GPL-3.0"
-description = "Audio Cutter - offline desktop audio trimming app"
+description = "Potong-Audio - offline desktop audio trimming app"
 edition = "2021"
 
 # ⚠️ CATATAN VERIFIKASI: dependency di bawah ini BELUM di-cargo-build
@@ -15,7 +15,7 @@ edition = "2021"
 # tauri-plugin-dialog yang rilisnya cepat berubah.
 
 [lib]
-name = "audio_cutter_lib"
+name = "potong_audio_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

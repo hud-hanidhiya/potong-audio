@@ -54,14 +54,14 @@ potongaudio/
 │   └── types/audio.types.ts
 ├── src-tauri/
 │   ├── build.rs                  ✅ tauri_build::build() (feature-gated)
-│   ├── Cargo.toml                ✅ lib.name = audio_cutter_lib; feature tauri-runtime
+│   ├── Cargo.toml                ✅ lib.name = potong_audio_lib; feature tauri-runtime
 │   ├── tauri.conf.json           ✅ valid; build.features = ["tauri-runtime"]
 │   ├── capabilities/default.json ✅ shell:allow-execute untuk ffmpeg/ffprobe
 │   ├── binaries/                 ✅ ffmpeg/ffprobe-x86_64-pc-windows-msvc(.exe)
 │   ├── icons/                    ✅ di-generate dari icon-source.png
 │   ├── test-fixtures/            ✅ fake_ffmpeg.sh + fake_ffmpeg.bat + sample/
 │   └── src/
-│       ├── main.rs               ✅ memanggil audio_cutter_lib::run()
+│       ├── main.rs               ✅ memanggil potong_audio_lib::run()
 │       ├── lib.rs                ✅ invoke_handler: export/cancel/probe/version
 │       ├── error.rs              ✅ 3 unit test lulus
 │       ├── commands/
