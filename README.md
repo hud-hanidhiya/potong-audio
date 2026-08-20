@@ -131,10 +131,10 @@ potongaudio/
 - [ ] Fade in/out, gain, speed/pitch dari UI
 - [ ] Save dialog native & export MP3/WAV/M4A/FLAC/M4R
 
-### v1.1 / v2
-- [ ] Multi-region trim (ditunda ke v2)
-- [ ] Undo/redo (ditunda ke v2)
-- [ ] Equalizer (ditunda ke v2)
+### v1.1
+- [ ] Multi-region trim
+- [ ] Undo/redo
+- [ ] Equalizer 
 - [ ] Batch processing
 - [ ] Keyboard shortcuts
 
