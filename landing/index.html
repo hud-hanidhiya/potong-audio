@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PotongAudio — Aplikasi desktop offline untuk trim, edit, dan konversi audio dengan presisi. Tersedia untuk Windows, macOS, dan Linux.">
+    <meta name="keywords" content="audio cutter, trim audio, editor audio, potong audio, audio editor desktop, offline audio editor">
+    <meta name="author" content="PotongAudio Team">
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="PotongAudio — Potong audio dengan presisi">
+    <meta property="og:description" content="Aplikasi desktop offline cross-platform untuk trim, efek, dan konversi format audio.">
+    <meta property="og:url" content="https://potongaudio.id">
+    
+    <title>PotongAudio — Potong audio dengan presisi</title>
+    
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #0ea5e9;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gradient: linear-gradient(135deg, #6366f1 0%, #0ea5e9 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: var(--light);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header */
+        header {
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--gray);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 160px 0 100px;
+            background: white;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .hero h1 span {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero p {
+            font-size: 20px;
+            color: var(--gray);
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .hero-image {
+            margin-top: 60px;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 100%;
+            height: auto;
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+            background: var(--light);
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-title h2 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        
+        .section-title p {
+            font-size: 18px;
+            color: var(--gray);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        .feature-card h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        .feature-card p {
+            color: var(--gray);
+            line-height: 1.7;
+        }
+        
+        /* Tech Stack Section */
+        .tech-stack {
+            padding: 100px 0;
+            background: white;
+        }
+        
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .tech-card {
+            background: var(--light);
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .tech-card h3 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        .tech-card ul {
+            list-style: none;
+            color: var(--gray);
+        }
+        
+        .tech-card li {
+            padding: 5px 0;
+        }
+        
+        /* CTA Section */
+        .cta {
+            padding: 100px 0;
+            background: var(--gradient);
+            color: white;
+            text-align: center;
+        }
+        
+        .cta h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        
+        .cta p {
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto 40px;
+            opacity: 0.95;
+        }
+        
+        .cta .btn {
+            background: white;
+            color: var(--primary);
+        }
+        
+        .cta .btn:hover {
+            background: var(--light);
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 60px 0 30px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-section h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-section p {
+            color: #94a3b8;
+            line-height: 1.7;
+        }
+        
+        .footer-section ul {
+            list-style: none;
+        }
+        
+        .footer-section li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-section a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-section a:hover {
+            color: white;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            color: white;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        
+        .social-links a:hover {
+            background: var(--primary);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #94a3b8;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            .hero p {
+                font-size: 16px;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">PotongAudio</div>
+                <ul class="nav-links">
+                    <li><a href="#features">Fitur</a></li>
+                    <li><a href="#tech">Teknologi</a></li>
+                    <li><a href="#download">Download</a></li>
+                    <li><a href="https://github.com/yourusername/potongaudio" target="_blank">GitHub</a></li>
+                </ul>
+                <a href="#download" class="btn btn-primary">Download</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Potong audio dengan <span>presisi</span></h1>
+            <p>Aplikasi desktop offline cross-platform untuk trim, efek, dan konversi format audio. 100% gratis, open source, dan tanpa upload ke server.</p>
+            <div class="hero-buttons">
+                <a href="#download" class="btn btn-primary">Download Gratis</a>
+                <a href="https://github.com/yourusername/potongaudio" target="_blank" class="btn btn-outline">Lihat di GitHub</a>
+            </div>
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 600'%3E%3Crect fill='%23f8fafc' width='1200' height='600'/%3E%3Crect fill='%23ffffff' x='100' y='100' width='1000' height='400' rx='12'/%3E%3Crect fill='%236366f1' x='150' y='150' width='900' height='300' rx='8' opacity='0.1'/%3E%3Ctext x='600' y='320' text-anchor='middle' fill='%2364748b' font-size='24' font-family='Arial'%3EScreenshot Aplikasi PotongAudio%3C/text%3E%3C/svg%3E" alt="PotongAudio Interface" class="hero-image" style="background: #e2e8f0; min-height: 400px; width: 100%; object-fit: cover;">
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Fitur Unggulan</h2>
+                <p>Semua yang Anda butuhkan untuk editing audio dalam satu aplikasi</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">✂️</div>
+                    <h3>Trim Presisi</h3>
+                    <p>Potong audio dengan akurasi milidetik menggunakan visualisasi waveform interaktif. Support multi-region trim untuk editing kompleks.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎚️</div>
+                    <h3>Efek Audio</h3>
+                    <p>Fade in/out, gain adjustment, speed/pitch control, dan equalizer multi-band untuk hasil audio profesional.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3>Konversi Format</h3>
+                    <p>Export ke berbagai format: MP3, WAV, M4A, AAC, FLAC, OGG, dan lainnya dengan kualitas terbaik.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>100% Offline</h3>
+                    <p>Semua processing dilakukan lokal di perangkat Anda. Tidak ada upload ke server, privasi terjamin 100%.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💻</div>
+                    <h3>Cross-Platform</h3>
+                    <p>Tersedia untuk Windows, macOS, dan Linux. Interface konsisten di semua platform.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Performa Tinggi</h3>
+                    <p>Dibangun dengan Rust dan FFmpeg native untuk processing audio secepat kilat, bahkan untuk file besar.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack Section -->
+    <section id="tech" class="tech-stack">
+        <div class="container">
+            <div class="section-title">
+                <h2>Dibangun dengan Teknologi Modern</h2>
+                <p>Stack teknologi terbaik untuk performa dan pengalaman pengguna optimal</p>
+            </div>
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <h3>Frontend</h3>
+                    <ul>
+                        <li>React 18 + TypeScript</li>
+                        <li>Vite (Build Tool)</li>
+                        <li>Zustand (State Management)</li>
+                        <li>WaveSurfer.js</li>
+                        <li>Tailwind CSS</li>
+                    </ul>
+                </div>
+                <div class="tech-card">
+                    <h3>Backend</h3>
+                    <ul>
+                        <li>Rust (Core Processing)</li>
+                        <li>Tauri v2 (Desktop Framework)</li>
+                        <li>FFmpeg (Audio Engine)</li>
+                        <li>FFprobe (Metadata)</li>
+                        <li>Tokio (Async Runtime)</li>
+                    </ul>
+                </div>
+                <div class="tech-card">
+                    <h3>DevOps</h3>
+                    <ul>
+                        <li>GitHub Actions (CI/CD)</li>
+                        <li>Cargo (Package Manager)</li>
+                        <li>npm (Frontend Packages)</li>
+                        <li>Docker (Testing)</li>
+                        <li>Sentry (Error Tracking)</li>
+                    </ul>
+                </div>
+                <div class="tech-card">
+                    <h3>Testing</h3>
+                    <ul>
+                        <li>Jest + React Testing Library</li>
+                        <li>Cargo Test (Rust)</li>
+                        <li>Playwright (E2E)</li>
+                        <li>TypeScript Strict Mode</li>
+                        <li>ESLint + Prettier</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="download" class="cta">
+        <div class="container">
+            <h2>Siap Memulai?</h2>
+            <p>Download PotongAudio sekarang dan mulai editing audio dengan presisi. Gratis, open source, dan tanpa batasan.</p>
+            <div class="hero-buttons">
+                <a href="https://github.com/yourusername/potongaudio/releases" target="_blank" class="btn">Download untuk Windows</a>
+                <a href="https://github.com/yourusername/potongaudio/releases" target="_blank" class="btn">Download untuk macOS</a>
+                <a href="https://github.com/yourusername/potongaudio/releases" target="_blank" class="btn">Download untuk Linux</a>
+            </div>
+            <p style="margin-top: 30px; font-size: 14px; opacity: 0.8;">
+                Versi: v1.0.0-beta • Rilis: Agustus 2026 • License: GPL-3.0
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>PotongAudio</h3>
+                    <p>Aplikasi desktop offline untuk trim, edit, dan konversi audio dengan presisi. Dibuat dengan ❤️ untuk komunitas audio editor Indonesia.</p>
+                    <div class="social-links">
+                        <a href="https://github.com/yourusername/potongaudio" target="_blank" title="GitHub">GH</a>
+                        <a href="https://twitter.com/potongaudio" target="_blank" title="Twitter">TW</a>
+                        <a href="https://instagram.com/potongaudio" target="_blank" title="Instagram">IG</a>
+                        <a href="https://youtube.com/@potongaudio" target="_blank" title="YouTube">YT</a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Produk</h3>
+                    <ul>
+                        <li><a href="#features">Fitur</a></li>
+                        <li><a href="#download">Download</a></li>
+                        <li><a href="https://github.com/yourusername/potongaudio/releases" target="_blank">Release Notes</a></li>
+                        <li><a href="https://github.com/yourusername/potongaudio/issues" target="_blank">Bug Tracker</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Dokumentasi</h3>
+                    <ul>
+                        <li><a href="https://github.com/yourusername/potongaudio#readme" target="_blank">README</a></li>
+                        <li><a href="https://github.com/yourusername/potongaudio/wiki" target="_blank">Wiki</a></li>
+                        <li><a href="https://github.com/yourusername/potongaudio/blob/main/docs/ARCHITECTURE.md" target="_blank">Arsitektur</a></li>
+                        <li><a href="https://github.com/yourusername/potongaudio/blob/main/docs/TESTING.md" target="_blank">Testing Guide</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Komunitas</h3>
+                    <ul>
+                        <li><a href="https://github.com/yourusername/potongaudio/discussions" target="_blank">Diskusi GitHub</a></li>
+                        <li><a href="https://twitter.com/potongaudio" target="_blank">Twitter</a></li>
+                        <li><a href="mailto:hello@potongaudio.id">Email</a></li>
+                        <li><a href="https://github.com/yourusername/potongaudio/blob/main/CONTRIBUTING.md" target="_blank">Kontribusi</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 PotongAudio. Dibuat dengan ❤️ oleh komunitas open source Indonesia.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll untuk anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Simple animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card, .tech-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

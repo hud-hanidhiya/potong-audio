@@ -1,0 +1,65 @@
+[package]
+name = "potong-audio"
+version = "0.1.0"
+license = "GPL-3.0"
+description = "Audio Cutter - offline desktop audio trimming app"
+edition = "2021"
+
+# ⚠️ CATATAN VERIFIKASI: dependency di bawah ini BELUM di-cargo-build
+# sungguhan dengan crate `tauri` (lihat catatan di src/main.rs dan
+# src/commands/export.rs untuk alasan teknisnya — toolchain sandbox
+# pembuatan dokumen ini tidak mendukung compile Tauri v2 penuh).
+# Versi dependency mengikuti dokumentasi resmi Tauri v2 per pengetahuan
+# terakhir yang tervalidasi; WAJIB dicek ulang dengan `cargo update` /
+# `cargo add` di project asli, terutama versi tauri-plugin-shell &
+# tauri-plugin-dialog yang rilisnya cepat berubah.
+
+[lib]
+name = "audio_cutter_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [], optional = true }
+
+[dependencies]
+# tauri & plugin-nya dibuat OPTIONAL supaya `cargo test` bisa jalan cepat
+# tanpa perlu resolve/compile seluruh dependency tree Tauri (yang berat
+# dan butuh dependensi sistem GUI). Modul inti yang teruji penuh
+# (filter_builder, progress_parser, sidecar's JobRegistry, probe's
+# parse_ffprobe_json) TIDAK bergantung pada tauri sama sekali.
+tauri = { version = "2", features = [], optional = true }
+tauri-plugin-shell = { version = "2", optional = true }
+tauri-plugin-dialog = { version = "2", optional = true }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+async-trait = "0.1"
+tokio = { version = "1", features = ["full"] }
+
+[features]
+# `cargo test` TANPA flag apapun = mode cepat, hanya modul inti (yang
+# sudah lulus 38 unit test). Untuk build aplikasi Tauri sungguhan
+# (`cargo tauri dev` / `cargo tauri build`), feature ini WAJIB aktif —
+# lihat [package.metadata] di bawah untuk cara Tauri CLI mengaktifkannya
+# otomatis, atau jalankan manual dengan `cargo build --features tauri-runtime`.
+tauri-runtime = ["dep:tauri", "dep:tauri-plugin-shell", "dep:tauri-plugin-dialog", "dep:tauri-build"]
+
+[package.metadata.tauri-runtime-note]
+# Tauri CLI (`cargo tauri dev`/`build`) secara default membaca [features]
+# tanpa "default" — kalau project asli ingin `cargo tauri dev` langsung
+# jalan tanpa perlu embel-embel --features, tambahkan:
+#   [features]
+#   default = ["tauri-runtime"]
+# TAPI itu artinya `cargo test` biasa juga akan ikut menarik dependency
+# Tauri. Rekomendasi: biarkan default kosong (seperti sekarang), lalu
+# jalankan test dengan `cargo test` (cepat, tanpa Tauri) dan build app
+# dengan `cargo tauri dev --features tauri-runtime` atau atur di
+# tauri.conf.json -> build.features.
+
+[profile.release]
+# Ukuran binary kecil adalah salah satu alasan utama pemilihan Tauri
+# (lihat PLAN_AUDIO_CUTTER.md) — strip simbol debug & optimalkan ukuran.
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true

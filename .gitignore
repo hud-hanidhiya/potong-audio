@@ -1,0 +1,9 @@
+# Node
+node_modules/
+dist/
+
+# Rust / Tauri
+src-tauri/target/
+
+# Binary sidecar (opsional, jika binary > 100MB dilarang oleh GitHub)
+# src-tauri/binaries/*
