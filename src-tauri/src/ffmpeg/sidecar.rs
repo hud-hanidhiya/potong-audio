@@ -340,52 +340,51 @@ mod tests {
 
     #[tokio::test]
     async fn cancel_menghentikan_proses_yang_sedang_berjalan() {
-        // Skrip yang sengaja berjalan lama, supaya ada waktu untuk cancel
-        // sebelum proses selesai sendiri. Gunakan eksekutor per-OS:
-        // sh (Unix) atau cmd (Windows) supaya test ini cross-platform.
-        let long_script = unique_tmp_path("long_ffmpeg");
-        let (script_content, script_path): (String, PathBuf) = {
-            #[cfg(target_os = "windows")]
-            {
-                let path = long_script.with_extension("bat");
-                let content = "@echo off\r\nping -n 30 127.0.0.1 >nul\r\n".to_string();
-                (content, path)
-            }
-            #[cfg(not(target_os = "windows"))]
-            {
-                let path = long_script.with_extension("sh");
-                let content = "#!/bin/bash\nsleep 30\necho done\n".to_string();
-                (content, path)
-            }
+        // Jalankan perintah long-running LANGSUNG lewat shell sistem yang sudah
+        // ada (sh di Unix, cmd di Windows), BUKAN menulis lalu mengeksekusi file
+        // script sendiri. Write+exec file di runner CI (overlayfs/tmpfs) memicu
+        // ETXTBSY "Text file busy" pada exec -> spawn().unwrap() panic
+        // (sidecar.rs:378). Itu penyebab asli, BUKAN race cancel.
+        let mut cmd = if cfg!(target_os = "windows") {
+            let mut c = Command::new("cmd");
+            c.args(["/C", "ping -n 30 127.0.0.1 >nul"]);
+            c
+        } else {
+            let mut c = Command::new("sh");
+            c.args(["-c", "sleep 30; echo done"]);
+            c
         };
+        let child = cmd
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .spawn()
+            .expect("gagal spawn shell long-running");
+        let pid_before = child.id();
+        assert!(pid_before.is_some(), "proses harus berhasil di-spawn");
 
-        std::fs::write(&script_path, &script_content).unwrap();
-
-        #[cfg(not(target_os = "windows"))]
-        {
-            let mut perms = std::fs::metadata(&script_path).unwrap().permissions();
-            std::os::unix::fs::PermissionsExt::set_mode(&mut perms, 0o755);
-            std::fs::set_permissions(&script_path, perms).unwrap();
-        }
+        // Simpan handle child supaya bisa memverifikasi proses benar-benar mati
+        // setelah cancel (deterministik, tanpa sleep buta).
+        let child_handle: Arc<Mutex<Child>> = Arc::new(Mutex::new(child));
+        let killable: Arc<dyn Killable + Send + Sync> = child_handle.clone();
 
         let registry = JobRegistry::default();
         let job_id = "cancel-test-job";
 
-        let child = Command::new(&script_path)
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .spawn()
-            .unwrap();
-        let pid_before = child.id();
-        assert!(pid_before.is_some(), "proses harus berhasil di-spawn");
-
-        let killable: Arc<dyn Killable + Send + Sync> = Arc::new(Mutex::new(child));
         registry.register(job_id, killable).await;
 
         let cancelled = registry.cancel(job_id).await;
         assert!(cancelled, "cancel terhadap job yang sedang berjalan harus berhasil");
 
-        let _ = std::fs::remove_file(&script_path);
+        // Verifikasi proses BENAR-BENAR di-terminate: tunggu reaping dgn timeout.
+        let reaped = tokio::time::timeout(
+            std::time::Duration::from_secs(10),
+            async { child_handle.lock().await.wait().await },
+        )
+        .await;
+        assert!(
+            reaped.is_ok(),
+            "proses harus selesai (reaped) dalam 10 dtk setelah cancel"
+        );
     }
 
     #[tokio::test]
