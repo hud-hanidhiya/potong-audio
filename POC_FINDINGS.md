@@ -21,17 +21,24 @@
 - Command baru `get_ffmpeg_version` (spawn `sidecar("ffmpeg") -version`,
   return string) sudah di-wire di `lib.rs` dan frontend menampilkan versinya
   di header (`src/App.tsx`).
+- Terverifikasi ulang via CI: job `build-windows` mengunduh FFmpeg/FFprobe
+  Windows (BtbN `win64-gpl`, tag `autobuild-2026-08-19-19-21`), verifikasi
+  `checksums.sha256`, jalankan `-version` (exit 0), dan `cargo test` 39 passed
+  di Windows (termasuk `fake_ffmpeg.bat`).
 
 ## 2. Sidecar FFmpeg bisa di-spawn di Linux x86_64?
 
-**BELUM TERVERIFIKASI DI LINGKUNGAN INI** (build host Windows).
+**YA.** (terverifikasi via CI, 2026-08-21)
 
-- Konfigurasi siap: `binaries/ffmpeg-x86_64-unknown-linux-gnu` (tanpa `.exe`)
-  dan `capabilities/default.json` memakai `shell:allow-execute` yang sama.
-- **Tindakan lanjut wajib**: download BtbN `linux64-gpl` build lalu jalankan
-  `cargo tauri build` di host Linux x86_64 sebelum menyatakan lulus.
-- Tidak ada kode OS-specific di sisi spawn (pola `app.shell().sidecar(...)`
-  identik di kedua OS), jadi risiko residual rendah.
+- Job `verify-linux-build` (ubuntu-22.04) mengunduh BtbN `linux64-gpl`
+  (`ffmpeg-N-126217-ge1e325235e-linux64-gpl.tar.xz`, tag sama dengan Windows
+  `autobuild-2026-08-19-19-21`), verifikasi `checksums.sha256`, lalu
+  `ffmpeg -version` & `ffprobe -version` jalan (exit 0) di runner.
+- `cargo test` (default features) 39 passed DI LUAR Tauri — termasuk 3 test yang
+  me-spawn `fake_ffmpeg.sh` (bukti spawn sidecar jalan di Linux, bukan cuma Windows).
+- `cargo tauri build` menghasilkan AppImage + `.deb` (lihat item #6).
+- Kode spawn OS-agnostic (`app.shell().sidecar(...)`), risiko residual rendah —
+  kini sudah dibuktikan di kedua OS.
 
 ## 3. Sidecar FFprobe bisa di-spawn di kedua OS?
 
@@ -39,8 +46,10 @@
 `target/release/ffprobe.exe`; `ffprobe -version` jalan dengan exit 0.
 Parsing JSON (`parse_ffprobe_json` di `probe.rs`) teruji 7 unit test.
 
-**Linux**: sama seperti FFmpeg — konfigurasi siap, butuh verifikasi di host
-Linux.
+**Linux: YA.** (terverifikasi via CI) — binary FFmpeg/FFprobe Linux di-download,
+diverifikasi checksum, dan `-version` jalan di job `verify-linux-build`;
+`parse_ffprobe_json` (probe.rs) teruji 7 unit test dan `run_export` tests
+memakai fixture di Linux lolos.
 
 ## 4. Progress streaming live ke UI?
 
@@ -71,12 +80,16 @@ Linux.
 
 ## 6. Keputusan FFmpeg build (full vs minimal) dengan ukuran
 
-| Item | Ukuran |
-|---|---|
-| `ffmpeg.exe` (BtbN gpl full, master 20260819) | 139.05 MB |
-| `ffprobe.exe` (BtbN gpl full) | 138.85 MB |
-| Aplikasi `potong-audio.exe` (release, stripped) | 4.44 MB |
-| Installer NSIS `Potong-Audio_0.1.0_x64-setup.exe` | 80.13 MB |
+| Item | OS | Ukuran |
+|---|---|---|
+| `ffmpeg` (BtbN gpl full, win64, 20260819) | Windows | 139.05 MB |
+| `ffprobe` (BtbN gpl full, win64) | Windows | 138.85 MB |
+| `ffmpeg` (BtbN gpl full, linux64) | Linux | ~139 MB |
+| `ffprobe` (BtbN gpl full, linux64) | Linux | ~139 MB |
+| `potong-audio.exe` (release, stripped) | Windows | 4.44 MB |
+| `Potong-Audio_0.1.0_x64-setup.exe` (NSIS) | Windows | 80.13 MB (84.012.300 byte — terkonfirmasi via artifact CI `build-windows`) |
+| `Potong-Audio_0.1.0_amd64.AppImage` | Linux | 177 MB |
+| `Potong-Audio_0.1.0_amd64.deb` | Linux | 114 MB |
 
 **Keputusan sementara: BtbN gpl full** untuk Fase 0/1 karena:
 - Satu build mencakup semua format yang dibutuhkan v1
@@ -100,12 +113,11 @@ Linux.
 
 **YA.**
 
-Semua PoC kritis Fase 0 lulus di Windows x86_64: sidecar spawn, ffprobe,
-progress streaming, trim end-to-end valid, build installer NSIS sukses,
-39 unit test hijau, frontend build sukses. Satu-satunya temuan yang belum
-terverifikasi adalah runtime Linux (butuh host Linux), dan itu bukan blokir
-untuk memulai Fase 1 (feat per-feature tetap bisa dikerjakan + diuji di
-Windows; verifikasi Linux dilakukan bersamaan dengan CI/build AppImage).
+Sekarang SELURUH PoC kritis Fase 0 lulus di Windows DAN Linux (via CI workflow
+`Verifikasi Build Linux & Windows (Fase 0 PoC)`), termasuk runtime Linux
+(AppImage + `.deb` build sukses, smoke test lewat xvfb, `cargo test` 39 passed
+termasuk spawn `fake_ffmpeg.sh`). Sisa pekerjaan di luar Fase 0: code signing
+(Fase 5, T5.1) dan perbandingan build FFmpeg full vs minimal (T0.4).
 
 ---
 
