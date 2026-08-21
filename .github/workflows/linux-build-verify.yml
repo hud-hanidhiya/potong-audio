@@ -54,7 +54,7 @@ jobs:
       # 1. Checkout & toolchain dasar
       # -----------------------------------------------------------------
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install system dependencies (WebKitGTK 4.1 utk Tauri v2)
         run: |
@@ -86,9 +86,9 @@ jobs:
           workspaces: "src-tauri -> target"
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 24
           cache: "npm"
 
       # -----------------------------------------------------------------
@@ -221,7 +221,7 @@ jobs:
       # 7. Upload artefak untuk inspeksi manual
       # -----------------------------------------------------------------
       - name: Upload AppImage & deb sebagai artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: potong-audio-linux-x86_64
           path: |
