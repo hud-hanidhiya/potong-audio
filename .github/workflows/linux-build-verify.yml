@@ -66,8 +66,13 @@ jobs:
             wget \
             file \
             libxdo-dev \
+            # NOTE: sengaja TIDAK memasang libayatana-appindicator3-dev — package
+            # itu hanya dibutuhkan oleh fitur system tray (tray-icon) Tauri, yang
+            # tidak dipakai di Potong-Audio (tauri = { features = [] } -> tray-icon
+            # mati, tidak ada kode tray di src-tauri/src). Kalau suatu saat fitur
+            # system tray diaktifkan, package ini WAJIB dikembalikan atau build
+            # Linux gagal link ke libappindicator3.
             libssl-dev \
-            libayatana-appindicator3-dev \
             librsvg2-dev \
             pkg-config \
             xvfb
@@ -105,7 +110,10 @@ jobs:
           BASE_URL="https://github.com/BtbN/FFmpeg-Builds/releases/download/${FFMPEG_RELEASE_TAG}"
 
           echo "Downloading: ${BASE_URL}/${FFMPEG_ASSET_NAME}"
-          curl -fL --retry 3 -o ffmpeg-linux.tar.xz "${BASE_URL}/${FFMPEG_ASSET_NAME}"
+          # Di-download pakai NAMA ASLI (FFMPEG_ASSET_NAME), BUKAN nama pendek,
+          # supaya `sha256sum -c` di bawah bisa menemukan file yang namanya
+          # tercantum di dalam baris checksums.sha256 (format: "<hash>  <nama>").
+          curl -fL --retry 3 -o "${FFMPEG_ASSET_NAME}" "${BASE_URL}/${FFMPEG_ASSET_NAME}"
 
           # BtbN menerbitkan checksums.sha256 per release (terverifikasi ada
           # di rilis mereka) — download dan verifikasi asset kita terhadap
@@ -118,7 +126,7 @@ jobs:
             echo "PERINGATAN: nama asset tidak ditemukan di checksums.sha256 rilis ini."
             echo "Kemungkinan format file checksum berubah — JANGAN lanjutkan build"
             echo "tanpa verifikasi manual. sha256 hasil download (untuk dibandingkan manual):"
-            sha256sum ffmpeg-linux.tar.xz
+            sha256sum "${FFMPEG_ASSET_NAME}"
             exit 1
           fi
 
@@ -126,7 +134,7 @@ jobs:
           echo "Checksum FFmpeg terverifikasi cocok dengan checksums.sha256 rilis."
 
           mkdir -p ffmpeg-extracted
-          tar -xf ffmpeg-linux.tar.xz -C ffmpeg-extracted --strip-components=1
+          tar -xf "${FFMPEG_ASSET_NAME}" -C ffmpeg-extracted --strip-components=1
 
           mkdir -p src-tauri/binaries
           cp ffmpeg-extracted/bin/ffmpeg src-tauri/binaries/ffmpeg-x86_64-unknown-linux-gnu
