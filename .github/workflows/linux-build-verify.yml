@@ -66,16 +66,16 @@ jobs:
             wget \
             file \
             libxdo-dev \
+            libssl-dev \
+            librsvg2-dev \
+            pkg-config \
+            xvfb
             # NOTE: sengaja TIDAK memasang libayatana-appindicator3-dev — package
             # itu hanya dibutuhkan oleh fitur system tray (tray-icon) Tauri, yang
             # tidak dipakai di Potong-Audio (tauri = { features = [] } -> tray-icon
             # mati, tidak ada kode tray di src-tauri/src). Kalau suatu saat fitur
             # system tray diaktifkan, package ini WAJIB dikembalikan atau build
             # Linux gagal link ke libappindicator3.
-            libssl-dev \
-            librsvg2-dev \
-            pkg-config \
-            xvfb
 
       - name: Setup Rust stable
         uses: dtolnay/rust-toolchain@stable
