@@ -1,4 +1,4 @@
-name: Verifikasi Linux (Fase 0 PoC)
+name: Verifikasi Build Linux & Windows (Fase 0 PoC)
 
 # Tujuan workflow ini: menutup item PoC yang masih "BELUM TERVERIFIKASI"
 # di POC_FINDINGS.md — spesifik item #2 (sidecar FFmpeg di Linux x86_64),
